@@ -1,10 +1,14 @@
 package kommunicate.io.sample;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
 
+import com.applozic.mobicomkit.contact.AppContactService;
 import com.applozic.mobicomkit.uiwidgets.kommunicate.views.KmToast;
+import com.applozic.mobicomkit.uiwidgets.kommunicate.widgets.KmChatWidget;
+import com.applozic.mobicomkit.uiwidgets.kommunicate.widgets.KmChatWidgetConfig;
 import com.applozic.mobicommons.commons.core.utils.Utils;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -17,6 +21,7 @@ import androidx.appcompat.widget.AppCompatButton;
 
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -29,6 +34,7 @@ import com.applozic.mobicomkit.api.account.register.RegistrationResponse;
 import java.util.HashMap;
 import java.util.Map;
 
+import androidx.core.app.ActivityCompat;
 import io.kommunicate.KmConversationHelper;
 import io.kommunicate.KmException;
 import io.kommunicate.app.BuildConfig;
@@ -45,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout layout;
     boolean exit = false;
     public static final String APP_ID = BuildConfig.APP_ID;
+    KmChatWidget floatingView;
     private static final String INVALID_APP_ID = "INVALID_APPLICATIONID";
 
     @Override
@@ -60,8 +67,39 @@ public class MainActivity extends AppCompatActivity {
         loginButton = (AppCompatButton) findViewById(R.id.btn_signup);
         visitorButton = findViewById(R.id.btn_login_as_visitor);
 
+        KMUser user = new KMUser();
+        user.setUserId("aman");
+        Kommunicate.login(MainActivity.this, user, new KMLoginHandler() {
+            @Override
+            public void onSuccess(RegistrationResponse registrationResponse, Context context)
+            {
+                //getUn
+
+                KmChatWidgetConfig config = new KmChatWidgetConfig.Builder()
+                        .setPaddingLeft(200)
+                        .setPaddingTop(200)
+                        .setPaddingRight(130)
+                        .setPaddingBottom(140)
+                        .setLauncherSize(250)
+                        .setMovable(true)
+                        .build();
+                floatingView = new KmChatWidget(MainActivity.this);
+                floatingView.show();
+            }
+
+            @Override
+            public void onFailure(RegistrationResponse registrationResponse, Exception exception) {
+
+            }
+        });
+
+
+
         TextView txtViewPrivacyPolicy = (TextView) findViewById(R.id.txtPrivacyPolicy);
         txtViewPrivacyPolicy.setMovementMethod(LinkMovementMethod.getInstance());
+        ActivityCompat.requestPermissions(MainActivity.this,
+                new String[]{Manifest.permission.SYSTEM_ALERT_WINDOW},
+                1);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,32 +130,80 @@ public class MainActivity extends AppCompatActivity {
         visitorButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isPlaceHolderAppId()) {
-                    return;
-                }
-                final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
-                progressDialog.setTitle("Logging in..");
-                progressDialog.setMessage("Please wait...");
-                progressDialog.setCancelable(false);
-                progressDialog.show();
-                Kommunicate.init(MainActivity.this, APP_ID);
-                Kommunicate.loginAsVisitor(MainActivity.this, new KMLoginHandler() {
-                    @Override
-                    public void onSuccess(RegistrationResponse registrationResponse, Context context) {
-                        finish();
-                        progressDialog.dismiss();
-                        Kommunicate.openConversation(context, null);
-                    }
-
-                    @Override
-                    public void onFailure(RegistrationResponse registrationResponse, Exception exception) {
-                        progressDialog.dismiss();
-                        createLoginErrorDialog(registrationResponse, exception);
-                    }
-                });
+//                if (isPlaceHolderAppId()) {
+//                    return;
+//                }
+//                final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
+//                progressDialog.setTitle("Logging in..");
+//                progressDialog.setMessage("Please wait...");
+//                progressDialog.setCancelable(false);
+//                progressDialog.show();
+//                Kommunicate.init(MainActivity.this, APP_ID);
+//                Kommunicate.loginAsVisitor(MainActivity.this, new KMLoginHandler() {
+//                    @Override
+//                    public void onSuccess(RegistrationResponse registrationResponse, Context context) {
+//                        finish();
+//                        progressDialog.dismiss();
+//                        Kommunicate.openConversation(context, null);
+//                    }
+//
+//                    @Override
+//                    public void onFailure(RegistrationResponse registrationResponse, Exception exception) {
+//                        progressDialog.dismiss();
+//                        createLoginErrorDialog(registrationResponse, exception);
+//                    }
+//                });
+//                FloatingViewConfig config = new FloatingViewConfig.Builder()
+//                        .setPaddingLeft(12)
+//                        .setPaddingTop(13)
+//                        .setPaddingRight(13)
+//                        .setPaddingBottom(14)
+//                        .setDisplayHeight(90)
+//                        .setDisplayWidth(90)
+//                        //.setMovable(false)
+//                        .build();
+//                FloatingView floatingView = new FloatingView(MainActivity.this, R.layout.view_floating, config);
+                //FloatingView floatingView = new FloatingView(MainActivity.this);
+                //floatingView.showOverlayActivity();
+//                floatingView.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        Toast.makeText(MainActivity.this, "clicked", Toast.LENGTH_SHORT).show();
+//                        Kommunicate.loginAsVisitor(MainActivity.this, new KMLoginHandler() {
+//                    @Override
+//                    public void onSuccess(RegistrationResponse registrationResponse, Context context) {
+//                        finish();
+//                        //progressDialog.dismiss();
+//                        Kommunicate.openConversation(context, null);
+//                    }
+//
+//                    @Override
+//                    public void onFailure(RegistrationResponse registrationResponse, Exception exception) {
+//                        //progressDialog.dismiss();
+//                        createLoginErrorDialog(registrationResponse, exception);
+//                    }
+//                });
+//                    }
+//                });
             }
         });
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(floatingView != null) {
+            Log.e("floating", "desotry");
+            floatingView.hide();
+        }
+    }
+
 
     public boolean isPlaceHolderAppId() {
         if (Kommunicate.PLACEHOLDER_APP_ID.equals(APP_ID)) {
@@ -204,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
                     metadata.put("skipBot", "true");
                     ApplozicClient.getInstance(context).hideActionMessages(false).setMessageMetaData(metadata);
                 }
-
+                Log.e("floatingview", String.valueOf(new AppContactService(context).getContactById("aman").getUnreadCount()));
                 try {
                     KmConversationHelper.openConversation(context, true, null, new KmCallback() {
                         @Override
@@ -212,6 +298,7 @@ public class MainActivity extends AppCompatActivity {
                             if (progressDialog != null && progressDialog.isShowing()) {
                                 progressDialog.dismiss();
                             }
+
                             finish();
                         }
 
