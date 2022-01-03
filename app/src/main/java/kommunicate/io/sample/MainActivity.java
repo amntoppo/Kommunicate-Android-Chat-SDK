@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import androidx.core.app.ActivityCompat;
+import io.kommunicate.KmConversationBuilder;
 import io.kommunicate.KmConversationHelper;
 import io.kommunicate.KmException;
 import io.kommunicate.app.BuildConfig;
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         visitorButton = findViewById(R.id.btn_login_as_visitor);
 
         KMUser user = new KMUser();
-        user.setUserId("aman");
+        user.setUserId("aman12345");
         Kommunicate.login(MainActivity.this, user, new KMLoginHandler() {
             @Override
             public void onSuccess(RegistrationResponse registrationResponse, Context context)
@@ -84,6 +85,23 @@ public class MainActivity extends AppCompatActivity {
                         .setMovable(true)
                         .build();
                 floatingView = new KmChatWidget(MainActivity.this);
+//                floatingView.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        new KmConversationBuilder(MainActivity.this)
+//                                .launchConversation(new KmCallback() {
+//                                    @Override
+//                                    public void onSuccess(Object message) {
+//                                        String conversationId = message.toString();
+//                                    }
+//
+//                                    @Override
+//                                    public void onFailure(Object error) {
+//                                        Log.d("ConversationTest", "Error : " + error);
+//                                    }
+//                                });
+//                    }
+//                });
                 floatingView.show();
             }
 
