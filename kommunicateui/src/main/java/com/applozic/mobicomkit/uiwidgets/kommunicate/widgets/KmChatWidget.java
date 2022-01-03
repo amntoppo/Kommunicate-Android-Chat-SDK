@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.applozic.mobicomkit.Applozic;
+import com.applozic.mobicomkit.api.account.register.RegistrationResponse;
 import com.applozic.mobicomkit.api.attachment.FileClientService;
 import com.applozic.mobicomkit.broadcast.AlEventManager;
 import com.applozic.mobicomkit.uiwidgets.R;
@@ -32,8 +33,10 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 import io.kommunicate.Kommunicate;
 import io.kommunicate.async.KmAppSettingTask;
+import io.kommunicate.callbacks.KMLoginHandler;
 import io.kommunicate.callbacks.KmCallback;
 import io.kommunicate.models.KmAppSettingModel;
+import io.kommunicate.users.KMUser;
 
 
 public class KmChatWidget {
@@ -92,6 +95,19 @@ public class KmChatWidget {
         rootView.measure(0, 0);
         width = rootView.getMeasuredWidth();
         height = rootView.getMeasuredHeight();
+        if(!KMUser.isLoggedIn(mContext)) {
+            Kommunicate.loginAsVisitor(mContext, new KMLoginHandler() {
+                @Override
+                public void onSuccess(RegistrationResponse registrationResponse, Context context) {
+                    Utils.printLog(mContext, TAG, "Registered as Visitor : " + registrationResponse);
+                }
+
+                @Override
+                public void onFailure(RegistrationResponse registrationResponse, Exception exception) {
+                    Utils.printLog(mContext, TAG, "Failed to login");
+                }
+            });
+        }
     }
 
     public static KmChatWidget getInstance(Context context) {
