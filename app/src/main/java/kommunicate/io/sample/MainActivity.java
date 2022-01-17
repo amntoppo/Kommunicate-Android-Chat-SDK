@@ -15,8 +15,11 @@ import android.os.Bundle;
 
 import androidx.appcompat.widget.AppCompatButton;
 
+import android.os.ResultReceiver;
+import android.text.PrecomputedText;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -26,17 +29,23 @@ import android.widget.Toast;
 import com.applozic.mobicomkit.ApplozicClient;
 import com.applozic.mobicomkit.api.account.register.RegistrationResponse;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.kommunicate.KmConversationHelper;
 import io.kommunicate.KmException;
 import io.kommunicate.app.BuildConfig;
 import io.kommunicate.callbacks.KmCallback;
+import io.kommunicate.callbacks.KmPrechatCallback;
+import io.kommunicate.models.KmPrechatInputModel;
 import io.kommunicate.users.KMUser;
 import io.kommunicate.Kommunicate;
 import io.kommunicate.app.R;
 import io.kommunicate.callbacks.KMLoginHandler;
+import io.kommunicate.utils.KmConstants;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -92,29 +101,76 @@ public class MainActivity extends AppCompatActivity {
         visitorButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isPlaceHolderAppId()) {
-                    return;
-                }
-                final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
-                progressDialog.setTitle("Logging in..");
-                progressDialog.setMessage("Please wait...");
-                progressDialog.setCancelable(false);
-                progressDialog.show();
-                Kommunicate.init(MainActivity.this, APP_ID);
-                Kommunicate.launchConversationWithPreChat(MainActivity.this, progressDialog, new KmCallback() {
+//                if (isPlaceHolderAppId()) {
+//                    return;
+//                }
+//                final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
+//                progressDialog.setTitle("Logging in..");
+//                progressDialog.setMessage("Please wait...");
+//                progressDialog.setCancelable(false);
+//                progressDialog.show();
+//                Kommunicate.init(MainActivity.this, APP_ID);
+//                Kommunicate.launchConversationWithPreChat(MainActivity.this, progressDialog, new KmCallback() {
+//                    @Override
+//                    public void onSuccess(Object message) {
+//                        finish();
+//                        progressDialog.dismiss();
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Object error) {
+//                        progressDialog.dismiss();
+//                        createLoginErrorDialog(null, (Exception) error);
+//
+//                    }
+//                });
+                List<KmPrechatInputModel> inputModelList = new ArrayList<>();
+
+                KmPrechatInputModel emailField = new KmPrechatInputModel();
+                emailField.setType(KmPrechatInputModel.KmInputType.EMAIL);
+                emailField.setRequired(true);
+                //emailField.setValidationRegex(EMAIL_VALIDATION_REGEX);
+                emailField.setPlaceholder("Email");
+                emailField.setField(getString(com.applozic.mobicomkit.uiwidgets.R.string.emailEt));
+                emailField.setCompositeRequiredField(getString(com.applozic.mobicomkit.uiwidgets.R.string.phoneNumberEt));
+
+                KmPrechatInputModel nameField = new KmPrechatInputModel();
+                nameField.setPlaceholder("Name");
+                nameField.setType(KmPrechatInputModel.KmInputType.TEXT);
+                nameField.setField(getString(com.applozic.mobicomkit.uiwidgets.R.string.nameEt));
+
+                KmPrechatInputModel contactField = new KmPrechatInputModel();
+                contactField.setType(KmPrechatInputModel.KmInputType.NUMBER);
+                contactField.setPlaceholder("Phone");
+                //contactField.setValidationRegex(PHONE_NUMBER_VALIDATION_REGEX);
+                contactField.setField(getString(com.applozic.mobicomkit.uiwidgets.R.string.phoneNumberEt));
+
+                KmPrechatInputModel dropdownField = new KmPrechatInputModel();
+                //dropdownField.setType(KmPrechatInputModel.KmInputType.DROPDOWN);
+                //contactField.setValidationRegex(PHONE_NUMBER_VALIDATION_REGEX);
+                dropdownField.setOptions(Arrays.asList("Kommunicate", "Intentive", "Applozic"));
+                dropdownField.setPlaceholder("Enter details");
+                //dropdownField.setRequired(true);
+                dropdownField.setField("Dropdown");
+                dropdownField.setElement("select");
+
+                inputModelList.add(emailField);
+                inputModelList.add(nameField);
+                inputModelList.add(contactField);
+                inputModelList.add(dropdownField);
+                Kommunicate.launchPrechatWithResult(MainActivity.this, inputModelList, new KmPrechatCallback<Map<String, String>>() {
                     @Override
-                    public void onSuccess(Object message) {
-                        finish();
-                        progressDialog.dismiss();
+                    public void onReceive(Map<String, String> data, Context context, ResultReceiver finishActivityReceiver) {
+                        finishActivityReceiver.send(KmConstants.PRECHAT_RESULT_CODE, null);
+                        Log.e("prechat", data.toString());
                     }
 
                     @Override
-                    public void onFailure(Object error) {
-                        progressDialog.dismiss();
-                        createLoginErrorDialog(null, (Exception) error);
+                    public void onError(String error) {
 
                     }
                 });
+
             }
         });
     }
