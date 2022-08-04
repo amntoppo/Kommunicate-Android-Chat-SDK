@@ -411,7 +411,7 @@ public class MessageClientService extends MobiComKitClientService {
             for (String filePath : message.getFilePaths()) {
                 try {
                     String fileMetaResponse = new FileClientService(context).uploadBlobImage(filePath, handler, oldMessageKey);
-                    if (fileMetaResponse == null) {
+                    if (TextUtils.isEmpty(fileMetaResponse)) {
                         if (skipMessage) {
                             return;
                         }
