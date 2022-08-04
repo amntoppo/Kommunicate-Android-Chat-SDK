@@ -2,6 +2,7 @@ package com.applozic.mobicomkit.api.attachment;
 
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 
 import com.applozic.mobicomkit.api.HttpRequestUtils;
 import com.applozic.mobicomkit.api.MobiComKitConstants;
@@ -123,6 +124,7 @@ public class ApplozicMultipartUtility {
         writer.append("--" + boundary + "--").append(LINE_FEED);
         writer.close();
         BufferedReader reader = null;
+        Log.e("upload", String.valueOf(httpConn.getResponseCode()));
         int status = httpConn.getResponseCode();
         try {
             if (status == HttpURLConnection.HTTP_OK) {

@@ -3,6 +3,7 @@ package com.applozic.mobicomkit.api.conversation;
 import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.applozic.mobicomkit.ApplozicClient;
 import com.applozic.mobicomkit.api.HttpRequestUtils;
@@ -425,6 +426,7 @@ public class MessageClientService extends MobiComKitClientService {
                             messageDatabaseService.updateCanceledFlag(messageId, 1);
                         }
                         BroadcastService.sendMessageUpdateBroadcast(context, BroadcastService.INTENT_ACTIONS.UPLOAD_ATTACHMENT_FAILED.toString(), message);
+                        Log.e("uppload", "Returned from filemetanull");
                         return;
                     }
                         if (!TextUtils.isEmpty(fileMetaResponse)) {
@@ -460,6 +462,7 @@ public class MessageClientService extends MobiComKitClientService {
                 messageDatabaseService.updateMessageFileMetas(messageId, message);
             }
         }
+        Log.e("uppload", "messagesent for key"+ message.getKeyString());
 
         Message newMessage = new Message();
         newMessage.setTo(message.getTo());

@@ -252,15 +252,16 @@ public class FileClientService extends MobiComKitClientService {
 
     public String uploadBlobImage(String path, Handler handler, String oldMessageKey) throws
             UnsupportedEncodingException {
+        String multi = null;
         try {
 
             ApplozicMultipartUtility multipart = new ApplozicMultipartUtility(getUploadURL(), "UTF-8", context);
             multipart.addFilePart("file", new File(path), handler, oldMessageKey);
-            return multipart.getResponse();
+            multi = multipart.getResponse();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return multi;
     }
 
     public String getUploadURL() {
