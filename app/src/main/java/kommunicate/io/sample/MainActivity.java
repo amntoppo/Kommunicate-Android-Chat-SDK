@@ -2,6 +2,7 @@ package kommunicate.io.sample;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 
 import com.applozic.mobicomkit.uiwidgets.kommunicate.views.KmToast;
@@ -37,6 +38,7 @@ import io.kommunicate.users.KMUser;
 import io.kommunicate.Kommunicate;
 import io.kommunicate.app.R;
 import io.kommunicate.callbacks.KMLoginHandler;
+import kommunicate.io.sample.pushnotification.TemporaryActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -189,6 +191,8 @@ public class MainActivity extends AppCompatActivity {
         final KMUser user = new KMUser();
         user.setUserId(userId);
         user.setApplicationId(APP_ID);
+        user.setEmail(userId + "@test.com");
+        user.setDisplayName(userId + "-ZendeskUser");
 
         if (!TextUtils.isEmpty(password)) {
             user.setPassword(password);
@@ -204,25 +208,31 @@ public class MainActivity extends AppCompatActivity {
                     metadata.put("skipBot", "true");
                     ApplozicClient.getInstance(context).hideActionMessages(false).setMessageMetaData(metadata);
                 }
-
-                try {
-                    KmConversationHelper.openConversation(context, true, null, new KmCallback() {
-                        @Override
-                        public void onSuccess(Object message) {
-                            if (progressDialog != null && progressDialog.isShowing()) {
+                if (progressDialog != null && progressDialog.isShowing()) {
                                 progressDialog.dismiss();
                             }
-                            finish();
-                        }
+                Intent intent = new Intent(MainActivity.this, TemporaryActivity.class);
+                startActivity(intent);
+                //Kommunicate.openZendeskChat(MainActivity.this);
 
-                        @Override
-                        public void onFailure(Object error) {
-
-                        }
-                    });
-                } catch (KmException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    KmConversationHelper.openConversation(context, true, null, new KmCallback() {
+//                        @Override
+//                        public void onSuccess(Object message) {
+//                            if (progressDialog != null && progressDialog.isShowing()) {
+//                                progressDialog.dismiss();
+//                            }
+//                            finish();
+//                        }
+//
+//                        @Override
+//                        public void onFailure(Object error) {
+//
+//                        }
+//                    });
+//                } catch (KmException e) {
+//                    e.printStackTrace();
+//                }
             }
 
             @Override

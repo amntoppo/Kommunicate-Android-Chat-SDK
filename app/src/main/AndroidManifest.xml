@@ -64,7 +64,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="kommunicate.io.sample.pushnotification.TemporaryActivity">
 
+        </activity>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDHQzh-cDfo-aY9_Q1fZFiZtaurg57eY7k" />

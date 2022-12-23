@@ -7,8 +7,10 @@ import android.os.Bundle;
 
 import com.applozic.mobicomkit.uiwidgets.conversation.activity.ConversationActivity;
 
+import io.kommunicate.Kommunicate;
 import io.kommunicate.users.KMUser;
 import io.kommunicate.app.R;
+import kommunicate.io.sample.pushnotification.TemporaryActivity;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
@@ -23,9 +25,10 @@ public class SplashScreenActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(SplashScreenActivity.this, KMUser.isLoggedIn(SplashScreenActivity.this) ? ConversationActivity.class : MainActivity.class);
+                Intent intent = new Intent(SplashScreenActivity.this, KMUser.isLoggedIn(SplashScreenActivity.this) ? TemporaryActivity.class : MainActivity.class);
                 SplashScreenActivity.this.startActivity(intent);
                 SplashScreenActivity.this.finish();
+        //        Kommunicate.openZendeskChat(SplashScreenActivity.this);
             }
         }, SPLASH_DISPLAY_LENGTH);
     }
